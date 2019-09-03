@@ -1,5 +1,4 @@
 <template>
-  <v-app id="inspire">
     <v-content>
       <v-container
         class="fill-height"
@@ -22,6 +21,7 @@
               >
                 <v-toolbar-title>Login form</v-toolbar-title>
                 <div class="flex-grow-1"></div>
+              </v-toolbar>
               <v-card-text>
                 <v-form>
                   <v-text-field
@@ -49,13 +49,19 @@
         </v-row>
       </v-container>
     </v-content>
-  </v-app>
 </template>
+
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
+import {
+  VApp, VContent, VCard, VBtn, VForm, VTextField, VToolbar,
+} from 'vuetify/lib';
 
   @Component({
     name: 'OwnerLogin',
+    components: {
+      VApp, VContent, VCard, VBtn, VForm, VTextField, VToolbar,
+    },
   })
 export default class OwnerLogin extends Vue {
 
