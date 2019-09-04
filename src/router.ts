@@ -3,6 +3,7 @@ import Router from 'vue-router';
 import Home from './views/Home.vue';
 import OwnerLogin from '@/views/OwnerLogin.vue';
 import UserLogin from '@/views/UserLogin.vue';
+import PropertyRegister from '@/views/owner/ItemRegister.vue';
 
 Vue.use(Router);
 
@@ -17,6 +18,11 @@ export default new Router({
       path: '/login/owner',
       name: 'OwnerLogin',
       component: OwnerLogin,
+    },
+    {
+      path: '/owner/property/register',
+      name: 'PropertyRegister',
+      component: PropertyRegister,
     },
     {
       path: '/login/user',
