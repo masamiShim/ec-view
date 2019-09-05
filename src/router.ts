@@ -4,6 +4,8 @@ import Home from './views/Home.vue';
 import OwnerLogin from '@/views/OwnerLogin.vue';
 import UserLogin from '@/views/UserLogin.vue';
 import ItemRegister from '@/views/owner/ItemRegister.vue';
+import ItemDetail from '@/views/customer/ItemDetail.vue';
+import ChatRoom from '@/views/ChatRoom.vue';
 
 Vue.use(Router);
 
@@ -29,5 +31,16 @@ export default new Router({
       name: 'UserLogin',
       component: UserLogin,
     },
+    {
+      path: '/customer/item/detail',
+      name: 'ItemDetail',
+      component: ItemDetail,
+    },
+    {
+      path: '/customer/chat/',
+      name: 'ChatRoom',
+      component: ChatRoom,
+    },
+
   ],
 });

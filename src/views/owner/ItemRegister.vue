@@ -24,15 +24,25 @@
             </v-toolbar>
             <v-card-text>
               <v-form>
+                <v-row v-if="selectedImagesPath" class="justify-center">
+                  <v-flex v-for="path in selectedImagesPath"  :key="path" xs8>
+                    <img :src="path" style="width:100%; box-sizing: border-box; max-height: 300px; max-width: 300px;"/>
+                  </v-flex>
+                </v-row>
+                <v-file-input label="商品画像" show-size chips accept="image/*" @change="onFileChange"
+                              :error-messages="fileErrors"
+                />
                 <v-text-field
                   label="商品名"
                   name="name"
                   :error-messages="nameErrors"
+                  :counter="30"
                   v-model="form.name"
                   type="text"
                 ></v-text-field>
                 <v-text-field
                   label="商品コード"
+                  :counter="20"
                   :error-messages="codeErrors"
                   name="code"
                   v-model="form.code"
@@ -52,24 +62,18 @@
                   v-model="form.quantity"
                   type="number"
                 ></v-text-field>
-                <v-text-field
+                <v-textarea
+                  name="input-7-4"
                   label="コメント"
-                  name="comment"
+                  :counter="1000"
                   :error-messages="commentErrors"
                   v-model="form.comment"
-                  type="text"
-                ></v-text-field>
-                <v-file-input label="商品画像" show-size chips multiple accept="image/*" @change="onFileChange"/>
-                <v-row v-if="selectedImagesPath" class="d-inline-flex">
-                  <v-flex v-for="path in selectedImagesPath" :key="path" xs6>
-                    <img :src="path" style="width:100%; box-sizing: border-box"/>
-                  </v-flex>
-                </v-row>
+                ></v-textarea>
               </v-form>
             </v-card-text>
             <v-card-actions class="pb-4">
               <div class="flex-grow-1"></div>
-              <v-btn color="primary" @click="doRegister">登録する</v-btn>
+              <v-btn color="primary" @click="doRegister" :disabled="inValid">登録する</v-btn>
             </v-card-actions>
           </v-card>
         </v-col>
@@ -87,17 +91,18 @@
   @Component({
     validations: {
       form: {
-        name: {required, maxLength: maxLength(80)},
+        name: {required, maxLength: maxLength(30)},
         code: {maxLength: maxLength(20)},
         price: {required, between: between(0, 100000000)},
         quantity: {required, between: between(1, 100000000)},
         comment: {maxLength: maxLength(1000)}
-      }
+      },
+      selectedImages: { required }
     }, name: 'ItemRegister'
   })
   export default class ItemRegister extends Vue {
     form: ItemRegisterForm = {
-      name: '', code: '', price: 0, quantity: 0, comment: ''
+      name: '', code: '', price: 0, quantity: 1, comment: ''
     };
 
     selectedImages: File[] = [];
@@ -108,7 +113,35 @@
       console.log('register');
     }
 
+    get inValid(): boolean {
+      return this.$v.$invalid;
+    }
+
+    // multipleついてないと入ってくるのは配列ではない
+    onFileChange(file: File) {
+      this.selectedImages = [];
+      this.selectedImagesPath = [];
+
+        const reader: FileReader = new FileReader();
+
+        reader.onload = ((ev: ProgressEvent<FileReader>) => {
+          const f = ev.target.result;
+          if (!f) {
+            return;
+          }
+
+          this.selectedImages.push(file);
+          this.selectedImagesPath.push(f);
+        });
+
+        reader.readAsDataURL(file);
+      }
+
+/*
+    // multiple=trueだと配列で入ってくる
     onFileChange(files: File[]) {
+      this.selectedImages = [];
+      this.selectedImagesPath = [];
 
       for (let i = 0, file: File; file = files[i]; i++) {
         const reader: FileReader = new FileReader();
@@ -126,10 +159,11 @@
         reader.readAsDataURL(file);
       }
     }
-
+*/
     get nameErrors() {
       const errors = [];
-      !(this as any).$v.form.name.required && errors.push('名前は必須です。');
+      !(this as any).$v.form.name.required && errors.push('名前は必須です');
+      !(this as any).$v.form.name.maxLength && errors.push('名前は30文字以内で入力してください');
       return errors;
     };
 
@@ -154,6 +188,12 @@
     get commentErrors() {
       const errors = [];
       !(this as any).$v.form.comment.maxLength && errors.push('コメントは1,000文字以内で入力してください。');
+      return errors;
+    };
+
+    get fileErrors() {
+      const errors = [];
+      !(this as any).$v.selectedImages.required && errors.push('商品画像は必須です。');
       return errors;
     };
   }
